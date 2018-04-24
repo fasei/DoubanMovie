@@ -44,32 +44,10 @@ class DoubanDancer(scrapy.Spider):
     url = "https://movie.douban.com/subject/" + settings.DOUBAN_ID + "/comments"  # 豆瓣影评的起始地址
     start_urls = [
         url + "?start=0&limit=20&sort=new_score&status=P&percent_type="]
-    user_agent_list = [ \
-        "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/22.0.1207.1 Safari/537.1" \
-        "Mozilla/5.0 (X11; CrOS i686 2268.111.0) AppleWebKit/536.11 (KHTML, like Gecko) Chrome/20.0.1132.57 Safari/536.11", \
-        "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.6 (KHTML, like Gecko) Chrome/20.0.1092.0 Safari/536.6", \
-        "Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.6 (KHTML, like Gecko) Chrome/20.0.1090.0 Safari/536.6", \
-        "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/19.77.34.5 Safari/537.1", \
-        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/536.5 (KHTML, like Gecko) Chrome/19.0.1084.9 Safari/536.5", \
-        "Mozilla/5.0 (Windows NT 6.0) AppleWebKit/536.5 (KHTML, like Gecko) Chrome/19.0.1084.36 Safari/536.5", \
-        "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1063.0 Safari/536.3", \
-        "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1063.0 Safari/536.3", \
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_0) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1063.0 Safari/536.3", \
-        "Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1062.0 Safari/536.3", \
-        "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1062.0 Safari/536.3", \
-        "Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1061.1 Safari/536.3", \
-        "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1061.1 Safari/536.3", \
-        "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1061.1 Safari/536.3", \
-        "Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1061.0 Safari/536.3", \
-        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.24 (KHTML, like Gecko) Chrome/19.0.1055.1 Safari/535.24", \
-        "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/535.24 (KHTML, like Gecko) Chrome/19.0.1055.1 Safari/535.24"
-    ]
-
-    i = 0  # 爬取个数
 
     def start_requests(self):
-        return [Request(url=self.loginUrl, meta={"cookiejar": 1},
-                        callback=self.parseLogin)]  # 可以传递一个标示符来使用多个。如meta={'cookiejar': 1}这句，后面那个1就是标示符
+        return [
+            Request(url=self.loginUrl, callback=self.parseLogin)]  # 可以传递一个标示符来使用多个。如meta={'cookiejar': 1}这句，后面那个1就是标示符
 
     def parseLogin(self, response):
         print("开始验证登录过程.")
@@ -99,10 +77,8 @@ class DoubanDancer(scrapy.Spider):
         else:
             data = {"form_email": self.userid, "form_password": self.userPassword, }
         return [
-            scrapy.FormRequest("https://www.douban.com/login", formdata=data,
-                               dont_filter=True, callback=self.loginResult,
-                               )
-        ]
+            scrapy.FormRequest(self.loginUrl, formdata=data, dont_filter=True,
+                               callback=self.loginResult, )]
 
     # 模拟登录，不登陆只能访问10页数据
     def loginResult(self, response):
@@ -128,14 +104,14 @@ class DoubanDancer(scrapy.Spider):
         print(len(Movies))
 
         for eachMoive in Movies:
-            print("i")
             # 因为此处返回的是字符串，已经没有选择器功能了，所以需要自建选择器
             selector = Selector(text=eachMoive)
             item = DouBanDancerItem()
             item['useableNumber'] = \
                 selector.xpath('//span[@class="comment-vote"]/span[@class="votes"]/text()').extract()[0].strip()  # 有用
             item['time'] = \
-                selector.xpath('//span[@class="comment-info"]/span[@class="comment-time "]/@title').extract()[0].strip()  # time
+                selector.xpath('//span[@class="comment-info"]/span[@class="comment-time "]/@title').extract()[
+                    0].strip()  # time
             item['content'] = selector.xpath('//p/text()').extract()[0].strip()
             item['star'] = selector.xpath('//span[@class="comment-info"]/span/@title').extract()[0].strip()
             item['uid'] = selector.xpath('//span[@class="comment-vote"]/input/@value').extract()[0].strip()  # 有用
@@ -145,8 +121,6 @@ class DoubanDancer(scrapy.Spider):
                 item['star'] = "未看"
 
             self.log('item: %s' % item, level=log.WARNING)
-            print(str(self.i))
-            self.i += 1
 
             yield item  # 提交生成csv文件
 
@@ -155,14 +129,11 @@ class DoubanDancer(scrapy.Spider):
         if nextLink:
             print(nextLink)
 
-            ua = random.choice(self.user_agent_list)  # 随机抽取User-Agent
-            print("ua:" + ua)
             headers = {
                 'Accept-Encoding': 'gzip, deflate, sdch, br',
                 'Accept-Language': 'zh-CN,zh;q=0.8',
                 'Connection': 'keep-alive',
                 'Referer': 'https://movie.douban.com/',
-                'User-Agent': ua
             }  # 构造请求头
 
             yield Request(self.url + nextLink, callback=self.parse, headers=headers)

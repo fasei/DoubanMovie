@@ -52,14 +52,22 @@ CONCURRENT_REQUESTS_PER_IP = 40
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 # SPIDER_MIDDLEWARES = {
-#    'DoubanMovie.middlewares.TutorialSpiderMiddleware': 543,
+#   'DoubanMovie.middlewares.TutorialSpiderMiddleware': 543,
 # }
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
-# DOWNLOADER_MIDDLEWARES = {
-#    'DoubanMovie.middlewares.MyCustomDownloaderMiddleware': 543,
-# }
+DOWNLOADER_MIDDLEWARES = {
+    #测试发现IP代理时，服务器拒绝
+
+    # IP代理的中间件
+    #'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 123,
+    #'DoubanMovie.middlewares.HTTPPROXY': 125,
+
+    # 浏览器代理的中间件
+    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': 2,
+    'DoubanMovie.middlewares.USERAGENT': 1
+}
 
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
@@ -69,11 +77,10 @@ CONCURRENT_REQUESTS_PER_IP = 40
 
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
-#item按数字从低到高的顺序，通过pipeline，通常将这些数字定义在0-1000范围内。
+# item按数字从低到高的顺序，通过pipeline，通常将这些数字定义在0-1000范围内。
 ITEM_PIPELINES = {
     'DoubanMovie.pipelines.TutorialPipeline': 300,
     'DoubanMovie.pipelines.WriteToFilePipeline': 310,
-
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -96,11 +103,9 @@ ITEM_PIPELINES = {
 # HTTPCACHE_DIR = 'httpcache'
 # HTTPCACHE_IGNORE_HTTP_CODES = []
 # HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
 # 设置编码格式
 FEED_EXPORT_ENCODING = 'utf-8'
-
-# 设置代理，有些网站是反爬虫，所以要将其伪装成浏览器
-USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36'
 
 # start MySQL database configure setting
 MYSQL_HOST = 'localhost'
@@ -117,9 +122,6 @@ DOUBAN_TABLE_NAME="dancer"
 DOUBAN_ID="27199901"
 '''
 
-DOUBAN_TABLE_NAME="wonderboy"
-#电影的ID
-DOUBAN_ID="26787574"
-
-
-
+DOUBAN_TABLE_NAME = "wonderboy"
+# 电影的ID
+DOUBAN_ID = "26787574"
