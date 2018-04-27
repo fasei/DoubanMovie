@@ -58,11 +58,11 @@ CONCURRENT_REQUESTS_PER_IP = 40
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-    #测试发现IP代理时，服务器拒绝
+    # 测试发现IP代理时，服务器拒绝
 
     # IP代理的中间件
-    #'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 123,
-    #'DoubanMovie.middlewares.HTTPPROXY': 125,
+    # 'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 123,
+    # 'DoubanMovie.middlewares.HTTPPROXY': 125,
 
     # 浏览器代理的中间件
     'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': 2,
@@ -121,7 +121,10 @@ DOUBAN_TABLE_NAME="dancer"
 #电影的ID
 DOUBAN_ID="27199901"
 '''
-
 DOUBAN_TABLE_NAME = "wonderboy"
 # 电影的ID
 DOUBAN_ID = "26787574"
+
+# 豆瓣的用户名和密码
+DOUBAN_USERID = "15128296802"  # 豆瓣的用户名
+DOUBAN_USER_PASSWORD = "xiaoyuanyuan1314"  # 豆瓣的密码

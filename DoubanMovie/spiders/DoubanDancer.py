@@ -1,13 +1,12 @@
-import random
 import urllib
 import scrapy
+from PIL import Image
 from scrapy import log
 from scrapy.http import Request
 from scrapy.selector import Selector
 
 from DoubanMovie import settings
 from DoubanMovie.items import DouBanDancerItem
-from PIL import Image
 
 '''
 爬取豆瓣"这就是街舞"的影评
@@ -35,9 +34,6 @@ scrapy crawl DoubanDancer
 
 
 class DoubanDancer(scrapy.Spider):
-    userid = "15128296802"  # 豆瓣的用户名
-    userPassword = "xiaoyuanyuan1314"  # 豆瓣的密码
-
     name = "DoubanDancer"  # 爬虫的名称
     loginUrl = "https://www.douban.com/login"  # 登录的地址
     allowed_domains = ["movie.douban.com", "www.douban.com", "douban.com"]  # 白名单的地址
@@ -71,11 +67,11 @@ class DoubanDancer(scrapy.Spider):
             realCaptchaId = response.xpath('//input[@name="captcha-id"]/@value').extract()[0]  # 获取验证码图片的链接
 
             data = {
-                "form_email": self.userid, "form_password": self.userPassword,
+                "form_email": settings.DOUBAN_USERID, "form_password": settings.DOUBAN_USER_PASSWORD,
                 "captcha-solution": captcha_value, "captcha-id": realCaptchaId
             }
         else:
-            data = {"form_email": self.userid, "form_password": self.userPassword, }
+            data = {"form_email": settings.DOUBAN_USERID, "form_password": settings.DOUBAN_USER_PASSWORD, }
         return [
             scrapy.FormRequest(self.loginUrl, formdata=data, dont_filter=True,
                                callback=self.loginResult, )]
