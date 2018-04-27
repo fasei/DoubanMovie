@@ -1,9 +1,10 @@
-# DoubanMovie 
+#  [DoubanMovie](https://github.com/fasei/DoubanMovie)
 本项目为爬虫项目，主要是爬取的豆瓣上电影的短影评，将数据爬取完成后，
 将影评数据存入数据库，同时生成影评的词云图
+[项目地址](https://github.com/fasei/DoubanMovie)
 
 ## 运行环境说明：
-使用的Python的**Scrapy**框架，数据库为**Mysql**
+使用的Python的**[Scrapy](https://scrapy.org/)**框架，数据库为**[Mysql](https://www.mysql.com/)**
 其中使用的python库还有
 * **PIL**
 * **MySQLdb**
