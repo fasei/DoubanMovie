@@ -39,5 +39,7 @@ if __name__ == '__main__':
     print("readText:")
     startPath = os.path.abspath(os.path.dirname(__file__)) + os.path.sep
     print("startPath:" + startPath)
+    readText(startPath + os.path.sep + '2.jpg')  # 可以识别ABC
+
     readText(startPath + os.path.sep + 'abc.png')  # 可以识别ABC
     readText(startPath + os.path.sep + 'chinese.png', 'chi_sim')  # 异常，未找到解决方法，放弃此方案
